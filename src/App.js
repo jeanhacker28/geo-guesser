@@ -1,85 +1,104 @@
-import React, { useState, useEffect } from "react";
-import LeafletMap from "./LeafletMap";
+import React, { useState, useEffect } from 'react';
+import LeafletMap from './LeafletMap';
 import './App.css';
 
-const unsplashApiKey = 'YOUR_UNSPLASH_API_KEY'; // Replace with your API key
-
 function App() {
-    const [image, setImage] = useState(null);
-    const [location, setLocation] = useState({ lat: 0, lon: 0 });
-    const [distance, setDistance] = useState(null);
+  const [image, setImage] = useState(null);
+  const [location, setLocation] = useState({ lat: 0, lon: 0 });
+  const [distance, setDistance] = useState(null);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(true);
 
-    const fetchRandomImage = async () => {
-      try {
-          const response = await fetch(`https://api.unsplash.com/photos/random?query=landscape&client_id=${unsplashApiKey}`);
-          const data = await response.json();
-          console.log(data); // Log the response for debugging
-          
-          if (data && data.length > 0) {
-              const randomImage = data[0];
-  
-              // Check if the image and location data are valid
-              if (randomImage.urls && randomImage.urls.regular) {
-                  setImage(randomImage.urls.regular);
-              } else {
-                  console.error("Image URL is missing.");
-              }
-  
-              if (randomImage.location && randomImage.location.lat && randomImage.location.lng) {
-                  setLocation({ lat: randomImage.location.lat, lon: randomImage.location.lng });
-              } else {
-                  console.warn("Location data is missing.");
-              }
-          } else {
-              console.error("No data returned from Unsplash API.");
-          }
-      } catch (error) {
-          console.error("Error fetching image from Unsplash:", error);
-      }
-  };  
+  // Dynamically import images from the public/images folder
+  const imageContext = require.context('./public/images', false, /\.(jpg|jpeg|png|gif)$/);
+  const imageFiles = imageContext.keys(); // Get the list of all image file paths
 
-    // Calculate the distance between two coordinates
-    const calculateDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371; // Radius of Earth in km
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
-        return distance;
-    };
+  // Fetch a random image from the public/images folder
+  const fetchRandomImage = () => {
+    const randomIndex = Math.floor(Math.random() * imageFiles.length);
+    const randomImagePath = imageFiles[randomIndex];
+    const randomImage = imageContext(randomImagePath);
 
-    // Handle user click on the map
-    const handleMapClick = (lat, lon) => {
-        const dist = calculateDistance(lat, lon, location.lat, location.lon);
-        setDistance(dist);
-    };
+    setImage(randomImage); // Set the random image
 
-    // Next location button click
-    const nextLocation = () => {
-        setDistance(null);
-        fetchRandomImage();
-    };
+    // For simplicity, assigning a random location for now.
+    // Ideally, you would store the lat/lon of each image in an array or database.
+    setLocation({
+      lat: Math.random() * 180 - 90, // Random latitude between -90 and 90
+      lon: Math.random() * 360 - 180 // Random longitude between -180 and 180
+    });
+  };
 
-    useEffect(() => {
-        fetchRandomImage();
-    }, []);
+  // Calculate the distance between two points on the globe
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+  };
 
-    return (
-        <div className="App">
-            <h1>GeoGuessr Lite</h1>
-            <div id="image-container">
-                {image && <img src={image} alt="Random location" />}
-            </div>
-            <LeafletMap location={location} onMapClick={handleMapClick} />
-            {distance !== null && (
-                <div id="result">
-                    <h3>You are {distance.toFixed(2)} km away from the real location!</h3>
-                </div>
-            )}
-            <button onClick={nextLocation}>Next Location</button>
+  // Handle user clicks on the map
+  const handleMapClick = (lat, lon) => {
+    if (location) {
+      const dist = calculateDistance(lat, lon, location.lat, location.lon);
+      setDistance(dist);
+    }
+  };
+
+  // Reset the game with a new random image
+  const nextLocation = () => {
+    setDistance(null);
+    fetchRandomImage();
+  };
+
+  // Start the game after showing instructions
+  const startGame = () => {
+    setShowInstructions(false);
+    setGameStarted(true);
+    fetchRandomImage(); // Start with a random image
+  };
+
+  return (
+    <div className="App">
+      <h1>GeoGuessr Lite</h1>
+
+      {showInstructions && (
+        <div className="instructions">
+          <h2>How to Play:</h2>
+          <p>
+            You will be shown an image of a random location. Your task is to guess where it was taken by clicking on the world map. 
+            The closer you are, the better your score!
+          </p>
+          <button onClick={startGame}>Start Game</button>
         </div>
-    );
+      )}
+
+      {gameStarted && (
+        <div className="game-container">
+          <div className="image-container">
+            {image && <img src={image} alt="Random location" className="game-image" />}
+          </div>
+
+          <div className="map-container">
+            <LeafletMap location={location} onMapClick={handleMapClick} />
+          </div>
+
+          {distance !== null && (
+            <div className="distance-info">
+              <h3>You are {distance.toFixed(2)} km away from the real location!</h3>
+            </div>
+          )}
+
+          <button onClick={nextLocation}>Next Location</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default App;

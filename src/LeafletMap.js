@@ -1,27 +1,31 @@
-import React, { useEffect } from "react";
-import L from "leaflet";
+import React, { useRef, useEffect } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const LeafletMap = ({ location, onMapClick }) => {
-    useEffect(() => {
-        const map = L.map("map", {
-            center: [location.lat, location.lon],
-            zoom: 5,
-        });
+  const mapRef = useRef(null);
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+  useEffect(() => {
+    // Initialize the map
+    const map = L.map(mapRef.current).setView([0, 0], 2); // Start with a world view
 
-        map.on("click", (e) => {
-            const { lat, lng } = e.latlng;
-            onMapClick(lat, lng);
-        });
+    // Add a tile layer (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        // Set marker at the real location
-        L.marker([location.lat, location.lon]).addTo(map).bindPopup("Real location").openPopup();
+    // Marker for the correct location
+    const marker = L.marker([location.lat, location.lon]).addTo(map);
 
-        return () => map.remove();
-    }, [location, onMapClick]);
+    // Handle map click
+    map.on('click', (e) => {
+      onMapClick(e.latlng.lat, e.latlng.lng);
+    });
 
-    return <div id="map" style={{ height: "400px", marginTop: "20px" }}></div>;
+    return () => {
+      map.remove(); // Clean up the map when component unmounts
+    };
+  }, [location, onMapClick]);
+
+  return <div ref={mapRef} className="leaflet-map" style={{ height: '400px', width: '600px' }} />;
 };
 
 export default LeafletMap;
